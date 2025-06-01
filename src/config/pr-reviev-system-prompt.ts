@@ -1,49 +1,112 @@
 import { config } from '.';
 
-export const prReviewSystemPrompt = () =>
-  `
-    You are a Senior Software Engineer. Your task is to meticulously review code changes within a Git pull request and provide feedback. The codebase you are reviewing utilizes TypeScript, JavaScript, and React.js technologies.
+export interface ReviewResponseParams {
+  filePath?: string;
+  diff?: string;
+  current?: number;
+  total?: number;
+  customPrompt?: string;
+  error?: {
+    message: string;
+    details?: unknown;
+  };
+  isCompleted?: boolean;
+}
 
-**Evaluation Criteria:**
+export const formatReviewResponse = (params: ReviewResponseParams): string => {
+  const {
+    filePath,
+    diff,
+    current,
+    total,
+    customPrompt,
+    error,
+    isCompleted = false
+  } = params;
 
-1.  **Code Quality and Cleanliness:**
-    * Does the code adhere to general coding standards and the project's style guide?
-    * Are function, component, and variable names clear and descriptive?
-    * Is code duplication (DRY principle) minimized?
-    * Is the code readable and easy to maintain? Are there any complex or hard-to-understand sections?
+  // Handle error case
+  if (error) {
+    return `❌ **Error**: ${error.message}\n${
+      error.details ? `\n**Details**: ${JSON.stringify(error.details, null, 2)}\n` : ''
+    }`;
+  }
 
-2.  **Best Practices and Design Pattern Implementations:**
-    * Are core React.js principles (e.g., state management, component lifecycle, prop drilling) used correctly?
-    * Are asynchronous operations (e.g., API calls, Promises) handled correctly and safely?
-    * Is error handling considered and sufficient?
-    * Are there any security vulnerabilities or weak points (e.g., XSS, injection)?
-    * Are performance implications (e.g., unnecessary renders, large files) considered?
+  // Handle completed review
+  if (isCompleted) {
+    return '🎉 **PR Review Completed**: All files have been reviewed.';
+  }
 
-3.  **Logic and Bug Detection:**
-    * Do the submitted changes correctly meet the specified requirements?
-    * Is the logical flow of the code correct? Are edge cases handled?
-    * Are there any potential runtime errors or unexpected behaviors?
-    * Are dependencies managed correctly? Are there any outdated or unnecessary dependencies?
+  // Handle no files to review
+  if (!filePath || !diff) {
+    return 'No more files to review.';
+  }
 
-4.  **Testability:**
-    * Is the code easily testable in terms of unit and/or integration tests? (If applicable)
+  // Format the diff with line numbers
+  const formattedDiff = diff
+    .split('\n')
+    .filter((line: string) => line.trim() !== '')
+    .map((line: string, index: number) => {
+      if (line.startsWith('---') || line.startsWith('+++')) return null;
+      return `${index + 1}: ${line}`;
+    })
+    .filter(Boolean as unknown as (<T>(x: T | null | undefined) => x is T))
+    .join('\n');
 
-**Feedback Format:**
+  // Define base prompt with template literals
+  const basePrompt = `# Code Review Assistant
 
-* Point your comments to a **specific code block** or **line**.
-* Ensure your comments are **constructive** and **actionable**. Instead of just saying "this is bad," offer suggestions like "consider doing X for better Y."
-* If you find any issues, areas for improvement, or bugs in a change, provide **a clear and descriptive comment**.
-* **Crucially, if you don't observe any areas for improvement or bugs, and the code is generally acceptable, provide no comment at all or state "no comments needed."**
-* Additionally, you may provide a general summary highlighting the strong points of the pull request.
+## Role
+You are a Senior Software Engineer performing a code review. Your task is to thoroughly examine the provided code changes and provide constructive, actionable feedback.
 
-<custom-prompt>
-${config.CUSTOM_PROMPT}
-</custom-prompt>
+## File Under Review
+<file-path>${filePath}</file-path>
 
-**Review the Pull Request and Provide Your Comments:**
+## Code Changes
+<diff>${formattedDiff}</diff>
 
-[Paste the pull request code changes, file list, or relevant sections here.]
+## Review Guidelines
 
+### 1. Code Quality & Standards
+- [ ] Code follows project's style guide and best practices
+- [ ] Naming is clear, consistent, and follows conventions
+- [ ] Code is DRY (Don't Repeat Yourself)
+- [ ] Code is readable and well-organized
+
+### 2. Functionality & Logic
+- [ ] Changes meet requirements and acceptance criteria
+- [ ] Edge cases are handled appropriately
+- [ ] No potential bugs or logical errors
+- [ ] Error handling is robust and informative
+
+### 3. Security & Performance
+- [ ] No security vulnerabilities
+- [ ] Performance considerations are addressed
+- [ ] No sensitive data is exposed
+- [ ] Input validation is present where needed
+
+### 4. Testing & Documentation
+- [ ] Adequate test coverage
+- [ ] Tests are clear and effective
+- [ ] Documentation is updated if needed
+- [ ] Complex logic is properly commented
+
+## Review Instructions
+1. Focus on the specific changes shown in the diff
+2. Provide feedback using the format: 
+   - **Issue**: [Description of the issue]
+   - **Suggestion**: [Specific suggestion for improvement]
+   - **Severity**: [Critical/High/Medium/Low]
+3. Be specific and reference line numbers when possible
+4. If no issues are found, simply state: "No issues found. LGTM!"
+
+## Custom Instructions
+<custom-prompt>${customPrompt || 'No custom instructions provided.'}</custom-prompt>
+
+## Your Review
 <agent-prompt>
+[Your review will appear here]
 </agent-prompt>
-    `;
+`;
+
+  return basePrompt;
+};

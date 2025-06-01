@@ -1,8 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { z } from 'zod';
+import { config } from '../config/index.js';
+import { formatReviewResponse } from '../config/pr-reviev-system-prompt.js';
 import { MCPService, type MCPResponse } from '../services/mcp.service.js';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
+import { z } from 'zod';
 
 // Define the handler parameter type
 interface HandlerParams {
@@ -52,6 +54,38 @@ export class BitbucketPRReviewerServer {
   }
 
   private setupTools(): void {
+    // Format PR review response based on the result
+    const formatMCPResponse = (result: any) => {
+      if (!result.success) {
+        return formatReviewResponse({
+          error: {
+            message: result.error?.message || 'Unknown error',
+            details: result.error?.details
+          }
+        });
+      }
+
+      // If review is completed
+      if (result.data?.customPrompt === 'PR review completed!') {
+        return formatReviewResponse({ isCompleted: true });
+      }
+
+      // If it's a file diff response
+      const { filePath, diff, current, total, customPrompt } = result.data;
+      
+      if (!filePath || !diff) {
+        return formatReviewResponse({});
+      }
+
+      return formatReviewResponse({
+        filePath,
+        diff,
+        current,
+        total,
+        customPrompt
+      });
+    };
+
     // Define the start review tool
     this.server.tool(
       'start_pr_review',
@@ -66,7 +100,7 @@ export class BitbucketPRReviewerServer {
             action: 'start',
           },
         });
-        return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+        return { content: [{ type: 'text', text: formatMCPResponse(result) }] };
       }
     );
 
@@ -84,7 +118,7 @@ export class BitbucketPRReviewerServer {
             action: 'next',
           },
         });
-        return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+        return { content: [{ type: 'text', text: formatMCPResponse(result) }] };
       }
     );
 
@@ -99,8 +133,7 @@ export class BitbucketPRReviewerServer {
           method: 'reset_review',
           params: { prNumber: String(prNumber) },
         });
-        // For MCP SDK, we need to return text content with JSON stringified
-        return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+        return { content: [{ type: 'text', text: formatMCPResponse(result) }] };
       }
     );
   }

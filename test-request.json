@@ -1,0 +1,7 @@
+{
+  "method": "get_pr_review",
+  "params": {
+    "prNumber": "1",
+    "action": "start"
+  }
+}

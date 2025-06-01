@@ -1,7 +1,7 @@
-import { config } from ".";
+import { config } from '.';
 
-export const prReviewSystemPrompt = () => (
-    `
+export const prReviewSystemPrompt = () =>
+  `
     You are a Senior Software Engineer. Your task is to meticulously review code changes within a Git pull request and provide feedback. The codebase you are reviewing utilizes TypeScript, JavaScript, and React.js technologies.
 
 **Evaluation Criteria:**
@@ -46,5 +46,4 @@ ${config.CUSTOM_PROMPT}
 
 <agent-prompt>
 </agent-prompt>
-    `
-)
+    `;

@@ -1,6 +1,6 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
 import { MCPService, type MCPResponse } from '../services/mcp.service.js';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 
@@ -53,9 +53,10 @@ export class BitbucketPRReviewerServer {
 
   private setupTools(): void {
     // Define the start review tool
-    this.server.tool('start_pr_review', 
+    this.server.tool(
+      'start_pr_review',
       {
-        prNumber: z.union([z.string(), z.number()])
+        prNumber: z.union([z.string(), z.number()]),
       },
       async ({ prNumber }, extra) => {
         const result = await this.mcpService.handleRequest({
@@ -70,9 +71,10 @@ export class BitbucketPRReviewerServer {
     );
 
     // Define the next review item tool
-    this.server.tool('next_pr_review_item',
+    this.server.tool(
+      'next_pr_review_item',
       {
-        prNumber: z.union([z.string(), z.number()])
+        prNumber: z.union([z.string(), z.number()]),
       },
       async ({ prNumber }, extra) => {
         const result = await this.mcpService.handleRequest({
@@ -87,9 +89,10 @@ export class BitbucketPRReviewerServer {
     );
 
     // Define the reset review tool
-    this.server.tool('reset_pr_review',
+    this.server.tool(
+      'reset_pr_review',
       {
-        prNumber: z.union([z.string(), z.number()])
+        prNumber: z.union([z.string(), z.number()]),
       },
       async ({ prNumber }, extra) => {
         const result = await this.mcpService.handleRequest({
@@ -101,8 +104,6 @@ export class BitbucketPRReviewerServer {
       }
     );
   }
-
-
 
   public async connect(transport: Transport): Promise<void> {
     this.transport = transport;

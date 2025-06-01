@@ -45,6 +45,7 @@ npm test
 ## Reporting Issues
 
 When reporting issues, please include:
+
 - Steps to reproduce
 - Expected behavior
 - Actual behavior

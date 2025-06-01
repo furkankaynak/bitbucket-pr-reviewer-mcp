@@ -80,10 +80,7 @@ export class MCPService {
         case 'reset_review':
           return await this.resetReview(prNumber);
         default:
-          return this.createErrorResponse(
-            'METHOD_NOT_FOUND',
-            `Method '${method}' not found`
-          );
+          return this.createErrorResponse('METHOD_NOT_FOUND', `Method '${method}' not found`);
       }
     } catch (error) {
       console.error('Error handling MCP request:', error);
@@ -111,7 +108,7 @@ export class MCPService {
 
       // Get changed files from Bitbucket
       const changedFiles = await bitbucketService.getChangedFiles(prNumber);
-      
+
       // Filter out excluded files
       const filesToReview = bitbucketService.filterExcludedFiles(changedFiles);
 
@@ -144,7 +141,7 @@ export class MCPService {
     try {
       // Get the next file to review
       const nextFile = await databaseService.getNextFile(prNumber);
-      
+
       if (!nextFile) {
         // No more files to review, mark as complete
         await databaseService.completeReview(prNumber);

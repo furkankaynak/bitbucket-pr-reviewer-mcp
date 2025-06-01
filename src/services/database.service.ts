@@ -9,9 +9,10 @@ export class DatabaseService {
 
   constructor() {
     // Store database in the project root in development, in-memory for tests
-    this.dbPath = process.env.NODE_ENV === 'test' 
-      ? ':memory:' 
-      : path.join(process.cwd(), 'bitbucket-pr-reviewer.db');
+    this.dbPath =
+      process.env.NODE_ENV === 'test'
+        ? ':memory:'
+        : path.join(process.cwd(), 'bitbucket-pr-reviewer.db');
   }
 
   /**
@@ -23,7 +24,7 @@ export class DatabaseService {
 
   public async initialize(): Promise<void> {
     if (this.db) return;
-    
+
     this.db = await open({
       filename: this.dbPath,
       driver: sqlite3.Database,
@@ -34,7 +35,7 @@ export class DatabaseService {
 
   private async initializeDatabase(): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     // Enable foreign keys
     await this.db.exec('PRAGMA foreign_keys = ON');
 
@@ -66,7 +67,7 @@ export class DatabaseService {
     if (!this.db) throw new Error('Database not initialized');
 
     await this.db.run('BEGIN TRANSACTION');
-    
+
     try {
       // Insert or update PR status
       await this.db.run(
@@ -87,11 +88,11 @@ export class DatabaseService {
       const stmt = await this.db.prepare(
         'INSERT INTO pr_files (pr_number, file_path, reviewed, review_order) VALUES (?, ?, 0, ?)'
       );
-      
+
       for (let i = 0; i < files.length; i++) {
         await stmt.run(prNumber, files[i].path, i);
       }
-      
+
       await stmt.finalize();
       await this.db.run('COMMIT');
     } catch (error) {
@@ -100,15 +101,17 @@ export class DatabaseService {
     }
   }
 
-  public async getNextFile(prNumber: string): Promise<{ filePath: string; current: number; total: number } | null> {
+  public async getNextFile(
+    prNumber: string
+  ): Promise<{ filePath: string; current: number; total: number } | null> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     interface NextFileResult {
       file_path: string;
       current_index: number;
       total_files: number;
     }
-    
+
     const result = await this.db.get<NextFileResult>(
       `SELECT f.file_path, s.current_index, s.total_files
        FROM pr_status s
@@ -130,7 +133,7 @@ export class DatabaseService {
 
   public async markFileAsReviewed(prNumber: string, filePath: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     // Use a transaction to ensure data consistency
     await this.db.run('BEGIN TRANSACTION');
     try {
@@ -140,7 +143,7 @@ export class DatabaseService {
          WHERE pr_number = ? AND file_path = ?`,
         [prNumber, filePath]
       );
-      
+
       // Increment the current index
       await this.db.run(
         `UPDATE pr_status 
@@ -149,7 +152,7 @@ export class DatabaseService {
          WHERE pr_number = ?`,
         [prNumber]
       );
-      
+
       await this.db.run('COMMIT');
     } catch (error) {
       await this.db.run('ROLLBACK');
@@ -159,7 +162,7 @@ export class DatabaseService {
 
   public async completeReview(prNumber: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     await this.db.run(
       `UPDATE pr_status 
        SET status = 'completed', 
@@ -171,21 +174,15 @@ export class DatabaseService {
 
   public async resetReview(prNumber: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     await this.db.run('BEGIN TRANSACTION');
     try {
       // Delete all files for this PR
-      await this.db.run(
-        'DELETE FROM pr_files WHERE pr_number = ?',
-        [prNumber]
-      );
-      
+      await this.db.run('DELETE FROM pr_files WHERE pr_number = ?', [prNumber]);
+
       // Delete the PR status
-      await this.db.run(
-        'DELETE FROM pr_status WHERE pr_number = ?',
-        [prNumber]
-      );
-      
+      await this.db.run('DELETE FROM pr_status WHERE pr_number = ?', [prNumber]);
+
       await this.db.run('COMMIT');
     } catch (error) {
       await this.db.run('ROLLBACK');
@@ -195,18 +192,18 @@ export class DatabaseService {
 
   public async isReviewInProgress(prNumber: string): Promise<boolean> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     interface CountResult {
       count: number;
     }
-    
+
     const result = await this.db.get<CountResult>(
       `SELECT COUNT(*) as count 
        FROM pr_status 
        WHERE pr_number = ? AND status = 'in_progress'`,
       [prNumber]
     );
-    
+
     return result?.count ? result.count > 0 : false;
   }
 

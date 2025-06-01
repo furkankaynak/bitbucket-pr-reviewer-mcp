@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run pre-commit
+echo "Running pre-commit checks..."
+npm run lint --if-present
+npm run format --if-present
+npm run build --if-present

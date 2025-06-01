@@ -9,7 +9,7 @@ import { databaseService } from './services/database.service.js';
 async function main() {
   try {
     console.log('Starting Bitbucket PR Reviewer MCP Server...');
-    
+
     // Initialize services
     const mcpService = new MCPService({
       name: 'bitbucket-pr-reviewer',
@@ -22,16 +22,15 @@ async function main() {
 
     // Initialize database
     await databaseService.initialize();
-    
+
     // Set up stdio transport and connect the server to it
     const transport = new StdioServerTransport();
     await mcpServer.connect(transport);
-    
+
     console.log('Bitbucket PR Reviewer MCP Server is running on stdio');
-    
+
     // Keep the process alive
     process.stdin.resume();
-    
   } catch (error) {
     console.error('Fatal error in main():', error);
     process.exit(1);

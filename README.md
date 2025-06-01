@@ -20,12 +20,14 @@ A Model Context Protocol (MCP) Server that provides automated Pull Request revie
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-username/bitbucket-pr-reviewer-mcp.git
    cd bitbucket-pr-reviewer-mcp
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -72,6 +74,7 @@ npm run dev
 ## Building for Production
 
 1. Build the project:
+
    ```bash
    npm run build
    ```
@@ -90,6 +93,7 @@ This MCP server communicates over stdio, making it compatible with any MCP clien
 The server provides the following MCP tools:
 
 1. **start_pr_review**
+
    - Description: Start a new PR review
    - Parameters: `{ prNumber: string | number }`
    - Example:
@@ -101,6 +105,7 @@ The server provides the following MCP tools:
      ```
 
 2. **next_pr_review_item**
+
    - Description: Get the next item in the PR review
    - Parameters: `{ prNumber: string | number }`
    - Example:
@@ -125,6 +130,7 @@ The server provides the following MCP tools:
 ## Running the Server
 
 1. Build the project:
+
    ```bash
    npm run build
    ```
@@ -238,23 +244,22 @@ src/
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| PORT | Server port | 3000 |
-| NODE_ENV | Node environment | development |
-| BITBUCKET_BASE_URL | Bitbucket API base URL | https://api.bitbucket.org/2.0 |
-| BITBUCKET_PROJECT_KEY | Bitbucket project key | - |
-| BITBUCKET_REPOSITORY_SLUG | Repository slug | - |
-| BITBUCKET_AUTH_TOKEN | Personal access token | - |
-| BITBUCKET_USERNAME | Bitbucket username | - |
-| BITBUCKET_PASSWORD | App password | - |
-| EXCLUDE_PATTERNS | Comma-separated file patterns to exclude | - |
-| CUSTOM_PROMPT | Custom prompt for AI reviewer | - |
+| Variable                  | Description                              | Default                       |
+| ------------------------- | ---------------------------------------- | ----------------------------- |
+| PORT                      | Server port                              | 3000                          |
+| NODE_ENV                  | Node environment                         | development                   |
+| BITBUCKET_BASE_URL        | Bitbucket API base URL                   | https://api.bitbucket.org/2.0 |
+| BITBUCKET_PROJECT_KEY     | Bitbucket project key                    | -                             |
+| BITBUCKET_REPOSITORY_SLUG | Repository slug                          | -                             |
+| BITBUCKET_AUTH_TOKEN      | Personal access token                    | -                             |
+| BITBUCKET_USERNAME        | Bitbucket username                       | -                             |
+| BITBUCKET_PASSWORD        | App password                             | -                             |
+| EXCLUDE_PATTERNS          | Comma-separated file patterns to exclude | -                             |
+| CUSTOM_PROMPT             | Custom prompt for AI reviewer            | -                             |
 
 ## License
 
 MIT
-
 
 ## License
 

@@ -27,15 +27,17 @@ export class BitbucketService {
 
   private getAuthHeaders(): Record<string, string> {
     if (config.BITBUCKET_AUTH_TOKEN) {
-      return { 'Authorization': `Bearer ${config.BITBUCKET_AUTH_TOKEN}` };
+      return { Authorization: `Bearer ${config.BITBUCKET_AUTH_TOKEN}` };
     } else if (config.BITBUCKET_USERNAME && config.BITBUCKET_PASSWORD) {
       const credentials = Buffer.from(
         `${config.BITBUCKET_USERNAME}:${config.BITBUCKET_PASSWORD}`
       ).toString('base64');
-      return { 'Authorization': `Basic ${credentials}` };
+      return { Authorization: `Basic ${credentials}` };
     }
-    
-    throw new Error('No authentication method provided. Set either BITBUCKET_AUTH_TOKEN or BITBUCKET_USERNAME and BITBUCKET_PASSWORD');
+
+    throw new Error(
+      'No authentication method provided. Set either BITBUCKET_AUTH_TOKEN or BITBUCKET_USERNAME and BITBUCKET_PASSWORD'
+    );
   }
 
   /**
@@ -43,10 +45,12 @@ export class BitbucketService {
    */
   public async getChangedFiles(prNumber: string): Promise<ChangedFile[]> {
     try {
-      const response = await this.client.get<{ values: Array<{ path: { toString: () => string }; type?: string }> }>(
+      const response = await this.client.get<{
+        values: Array<{ path: { toString: () => string }; type?: string }>;
+      }>(
         `/projects/${config.BITBUCKET_PROJECT_KEY}/repos/${config.BITBUCKET_REPOSITORY_SLUG}/pull-requests/${prNumber}/changes`
       );
-      
+
       if (!response.data || !Array.isArray(response.data.values)) {
         throw new Error('Invalid response from Bitbucket API');
       }
@@ -58,7 +62,9 @@ export class BitbucketService {
       }));
     } catch (error) {
       console.error('Error fetching changed files:', error);
-      throw new Error(`Failed to fetch changed files: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to fetch changed files: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -71,7 +77,7 @@ export class BitbucketService {
         `/projects/${config.BITBUCKET_PROJECT_KEY}/repos/${config.BITBUCKET_REPOSITORY_SLUG}/pull-requests/${prNumber}/diff/${encodeURIComponent(filePath)}`,
         {
           headers: {
-            'Accept': 'text/plain',
+            Accept: 'text/plain',
             ...this.getAuthHeaders(),
           },
           transformResponse: [(data) => data], // Get raw response
@@ -94,7 +100,7 @@ export class BitbucketService {
     }
 
     const excludePatterns = config.EXCLUDE_PATTERNS.map((pattern: string) => new RegExp(pattern));
-    
+
     return files.filter((file: ChangedFile) => {
       return !excludePatterns.some((pattern: RegExp) => pattern.test(file.path));
     });
@@ -118,7 +124,7 @@ export class BitbucketService {
     total: number
   ): Promise<FileDiff> {
     const diff = await this.getFileDiff(prNumber, filePath);
-    
+
     return {
       filePath,
       diff,
@@ -155,7 +161,9 @@ export class BitbucketService {
       return response.data || {};
     } catch (error) {
       console.error(`Error submitting comment for ${filePath} at line ${line}:`, error);
-      throw new Error(`Failed to submit comment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to submit comment: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 }

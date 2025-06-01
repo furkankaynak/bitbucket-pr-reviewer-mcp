@@ -25,18 +25,15 @@ The MCP Server is designed to facilitate automated Pull Request (PR) reviews by 
       "username": "your-username",
       "password": "your-password"
     },
-    "excludePatterns": [
-      "\\.md$",
-      "^docs/"
-    ],
+    "excludePatterns": ["\\.md$", "^docs/"],
     "customPrompt": "Please review the following diff for technical quality and best practices."
   }
 }
-````
+```
 
-* Either `token` or `username` + `password` must be provided.
-* `excludePatterns` is an array of regex strings; matching file paths will be excluded from review.
-* `customPrompt` is a string appended to the system prompt for PR review, customizable by the client.
+- Either `token` or `username` + `password` must be provided.
+- `excludePatterns` is an array of regex strings; matching file paths will be excluded from review.
+- `customPrompt` is a string appended to the system prompt for PR review, customizable by the client.
 
 ---
 
@@ -44,25 +41,26 @@ The MCP Server is designed to facilitate automated Pull Request (PR) reviews by 
 
 ### API Endpoints
 
-* **List Changed Files in PR**
+- **List Changed Files in PR**
   `GET /rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/changes`
 
-* **Get File Diff**
+- **Get File Diff**
   `GET /rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/diff/{path}`
 
 ### Workflow
 
 1. Extract PR number from client prompt (e.g., `pr review for #12345` → `12345`).
 2. Check embedded DB for existing file list for PR.
-3. If not present, call *List Changed Files* API to get all changed files.
+3. If not present, call _List Changed Files_ API to get all changed files.
 4. Filter files using `excludePatterns` from config.
 5. Store filtered list in embedded DB along with current index (initially 0).
 6. On each client request for PR review:
 
-   * Retrieve the next file path from DB based on current index.
-   * Call *Get File Diff* API for the specific file.
-   * Return the diff to the client appended with `customPrompt`.
-   * Update index in DB.
+   - Retrieve the next file path from DB based on current index.
+   - Call _Get File Diff_ API for the specific file.
+   - Return the diff to the client appended with `customPrompt`.
+   - Update index in DB.
+
 7. When all files are reviewed, return a "PR review completed" message.
 
 ---
@@ -80,31 +78,31 @@ The MCP Server is designed to facilitate automated Pull Request (PR) reviews by 
 
 ## 5. Authentication
 
-* Support Personal Access Tokens or Username/Password Basic Auth.
-* Credentials loaded from config and used in API HTTP headers.
-* Secure storage and access recommended.
+- Support Personal Access Tokens or Username/Password Basic Auth.
+- Credentials loaded from config and used in API HTTP headers.
+- Secure storage and access recommended.
 
 ---
 
 ## 6. Client Interaction
 
-* MCP Client sends prompt with PR number.
-* MCP Server responds with file diffs sequentially.
-* Support for client-defined exclude patterns and custom prompt via config.
-* State persistence across sessions.
+- MCP Client sends prompt with PR number.
+- MCP Server responds with file diffs sequentially.
+- Support for client-defined exclude patterns and custom prompt via config.
+- State persistence across sessions.
 
 ---
 
 ## 7. Error Handling
 
-* Handle Bitbucket API errors (rate limiting, authentication failures).
-* Graceful fallback and meaningful error messages to clients.
-* Logging for audit and debugging.
+- Handle Bitbucket API errors (rate limiting, authentication failures).
+- Graceful fallback and meaningful error messages to clients.
+- Logging for audit and debugging.
 
 ---
 
 ## 8. Security Considerations
 
-* Securely store and handle authentication tokens.
-* Limit access scope of tokens to read-only repository data.
-* Validate all incoming requests.
+- Securely store and handle authentication tokens.
+- Limit access scope of tokens to read-only repository data.
+- Validate all incoming requests.

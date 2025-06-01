@@ -75,7 +75,7 @@ Example integration test:
 ```typescript
 describe('MCP API', () => {
   let server: Server;
-  
+
   beforeAll(async () => {
     // Start the server
     const app = await createApp();

@@ -59,16 +59,19 @@ The server follows a modular architecture with clear separation of concerns:
 ### Key Components
 
 1. **MCP Server (`src/server/mcp.server.ts`)**
+
    - Implements the MCP protocol using `@modelcontextprotocol/sdk`
    - Defines available tools and their schemas using Zod
    - Handles tool execution and response formatting
 
 2. **Services (`src/services/`)**
+
    - `mcp.service.ts`: Main service that orchestrates PR review flow
    - `bitbucket.service.ts`: Handles Bitbucket API interactions
    - `database.service.ts`: Manages SQLite database operations
 
 3. **Configuration (`src/config/`)**
+
    - Loads and validates environment variables
    - Provides type-safe configuration access throughout the app
 
@@ -80,11 +83,13 @@ The server follows a modular architecture with clear separation of concerns:
 ## Data Flow
 
 1. **Tool Invocation**:
+
    - MCP client (e.g., Claude) invokes a tool via stdio
    - MCP server validates and routes the request
    - Appropriate service method is called with parameters
 
 2. **PR Review Flow**:
+
    - `start_pr_review`: Fetches PR details and initializes review state
    - `next_pr_review_item`: Gets the next file to review
    - `reset_pr_review`: Resets the review state
@@ -145,9 +150,11 @@ The server implements the following MCP tools for PR review:
 Starts a new PR review session.
 
 **Parameters:**
+
 - `prNumber` (string | number): The PR number to review
 
 **Example Request:**
+
 ```json
 {
   "method": "start_pr_review",
@@ -158,6 +165,7 @@ Starts a new PR review session.
 ```
 
 **Response:**
+
 - Initial PR information
 - First file to review (if any)
 - Total number of files in the PR
@@ -167,9 +175,11 @@ Starts a new PR review session.
 Gets the next item to review in the current PR.
 
 **Parameters:**
+
 - `prNumber` (string | number): The PR number being reviewed
 
 **Example Request:**
+
 ```json
 {
   "method": "next_pr_review_item",
@@ -180,6 +190,7 @@ Gets the next item to review in the current PR.
 ```
 
 **Response:**
+
 - Next file to review with its content and diff
 - Current review progress
 
@@ -188,9 +199,11 @@ Gets the next item to review in the current PR.
 Resets the review state for a PR.
 
 **Parameters:**
+
 - `prNumber` (string | number): The PR number to reset
 
 **Example Request:**
+
 ```json
 {
   "method": "reset_pr_review",
@@ -201,6 +214,7 @@ Resets the review state for a PR.
 ```
 
 **Response:**
+
 - Confirmation of reset
 - New review state
 
@@ -248,6 +262,7 @@ The SQLite database is used to track PR review progress and file status. The sch
 ### Tables
 
 #### `pr_status`
+
 Tracks the overall status of each PR being reviewed.
 
 ```sql
@@ -262,6 +277,7 @@ CREATE TABLE pr_status (
 ```
 
 #### `pr_files`
+
 Tracks individual files within each PR and their review status.
 
 ```sql
@@ -290,15 +306,18 @@ CREATE INDEX idx_pr_files_reviewed ON pr_files(reviewed);
 The server implements comprehensive error handling:
 
 1. **Input Validation**:
+
    - All tool parameters are validated using Zod schemas
    - Invalid parameters result in descriptive error messages
 
 2. **Bitbucket API Errors**:
+
    - API rate limits are respected with automatic retries
    - Authentication errors are caught and reported clearly
    - Network timeouts are handled gracefully
 
 3. **Database Errors**:
+
    - Connection errors are handled with automatic reconnection
    - Data integrity is maintained through transactions
    - Concurrent access is handled with appropriate locking
@@ -319,12 +338,14 @@ The server implements comprehensive error handling:
 ### Getting Started
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/bitbucket-pr-reviewer-mcp.git
    cd bitbucket-pr-reviewer-mcp
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -347,11 +368,13 @@ The server implements comprehensive error handling:
 ### Testing
 
 1. **Unit Tests**
+
    ```bash
    npm run test:unit
    ```
 
 2. **Integration Tests**
+
    ```bash
    npm run test:integration
    ```
@@ -364,6 +387,7 @@ The server implements comprehensive error handling:
 ### Debugging
 
 1. **Debug Logging**
+
    ```bash
    DEBUG=bitbucket-pr-reviewer:* npm start
    ```

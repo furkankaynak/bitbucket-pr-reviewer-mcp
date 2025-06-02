@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { databaseService } from './database.service.js';
+import databaseService from './database.js';
 import { bitbucketService } from './bitbucket.service.js';
 // Config is imported for potential future use
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -121,8 +121,8 @@ export class MCPService {
         );
       }
 
-      // Start the review - pass the full file objects
-      await databaseService.startPrReview(prNumber, filesToReview);
+      // Start the review - pass the total number of files to review
+      await databaseService.startPrReview(prNumber, filesToReview.length);
 
       // Get the first file diff
       return await this.getNextFileDiff(prNumber);

@@ -4,11 +4,21 @@ import 'dotenv/config';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { MCPService } from './services/mcp.service.js';
 import { BitbucketPRReviewerServer } from './server/mcp.server.js';
-import { databaseService } from './services/database.service.js';
+import databaseService from './services/database.js';
 
 async function main() {
   try {
     console.log('Starting Bitbucket PR Reviewer MCP Server...');
+
+    // Initialize database first
+    try {
+      console.log('Initializing database...');
+      await databaseService.initialize();
+      console.log('Database initialized successfully');
+    } catch (dbError) {
+      console.error('Failed to initialize database:', dbError);
+      process.exit(1);
+    }
 
     // Initialize services
     const mcpService = new MCPService({
@@ -18,14 +28,19 @@ async function main() {
     });
 
     // Initialize MCP server
+    console.log('Initializing MCP server...');
     const mcpServer = new BitbucketPRReviewerServer(mcpService);
 
-    // Initialize database
-    await databaseService.initialize();
-
     // Set up stdio transport and connect the server to it
-    const transport = new StdioServerTransport();
-    await mcpServer.connect(transport);
+    try {
+      console.log('Setting up transport...');
+      const transport = new StdioServerTransport();
+      await mcpServer.connect(transport);
+      console.log('Transport connected successfully');
+    } catch (transportError) {
+      console.error('Failed to set up transport:', transportError);
+      process.exit(1);
+    }
 
     console.log('Bitbucket PR Reviewer MCP Server is running on stdio');
 

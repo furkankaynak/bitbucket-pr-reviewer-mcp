@@ -9,8 +9,7 @@
     "bitbucket-pr-reviewer": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc && node -e \"const fs = require('fs'); const content = fs.readFileSync('./dist/index.js', 'utf8'); fs.writeFileSync('./dist/index.js', '#!/usr/bin/env node\\n' + content);\" && chmod 755 dist/index.js",
-    "build:win": "tsc && node -e \"const fs = require('fs'); const content = fs.readFileSync('./dist/index.js', 'utf8'); fs.writeFileSync('./dist/index.js', '#!/usr/bin/env node\\\\n' + content);\"",
+    "build": "tsc && chmod 755 dist/index.js",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "clean": "rm -rf dist",

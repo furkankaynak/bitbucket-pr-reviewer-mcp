@@ -14,15 +14,7 @@ export interface ReviewResponseParams {
 }
 
 export const formatReviewResponse = (params: ReviewResponseParams): string => {
-  const {
-    filePath,
-    diff,
-    current,
-    total,
-    customPrompt,
-    error,
-    isCompleted = false
-  } = params;
+  const { filePath, diff, current, total, customPrompt, error, isCompleted = false } = params;
 
   // Handle error case
   if (error) {
@@ -49,7 +41,7 @@ export const formatReviewResponse = (params: ReviewResponseParams): string => {
       if (line.startsWith('---') || line.startsWith('+++')) return null;
       return `${index + 1}: ${line}`;
     })
-    .filter(Boolean as unknown as (<T>(x: T | null | undefined) => x is T))
+    .filter(Boolean as unknown as <T>(x: T | null | undefined) => x is T)
     .join('\n');
 
   // Define base prompt with template literals
@@ -88,7 +80,6 @@ You are a Senior Software Engineer performing a code review. Your task is to tho
 - [ ] Adequate test coverage
 - [ ] Tests are clear and effective
 - [ ] Documentation is updated if needed
-- [ ] Complex logic is properly commented
 
 ## Review Instructions
 1. Focus on the specific changes shown in the diff
@@ -102,7 +93,7 @@ You are a Senior Software Engineer performing a code review. Your task is to tho
 ## Custom Instructions
 <custom-prompt>${customPrompt || 'No custom instructions provided.'}</custom-prompt>
 
-## Your Review
+## Agent Instructions
 <agent-prompt>
 [Your review will appear here]
 </agent-prompt>

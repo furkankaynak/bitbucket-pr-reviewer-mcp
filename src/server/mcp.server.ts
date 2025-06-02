@@ -60,8 +60,8 @@ export class BitbucketPRReviewerServer {
         return formatReviewResponse({
           error: {
             message: result.error?.message || 'Unknown error',
-            details: result.error?.details
-          }
+            details: result.error?.details,
+          },
         });
       }
 
@@ -72,7 +72,7 @@ export class BitbucketPRReviewerServer {
 
       // If it's a file diff response
       const { filePath, diff, current, total, customPrompt } = result.data;
-      
+
       if (!filePath || !diff) {
         return formatReviewResponse({});
       }
@@ -82,7 +82,7 @@ export class BitbucketPRReviewerServer {
         diff,
         current,
         total,
-        customPrompt
+        customPrompt,
       });
     };
 

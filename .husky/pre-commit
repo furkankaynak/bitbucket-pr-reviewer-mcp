@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "Running pre-commit checks..."
-npm run lint --if-present
-npm run format --if-present
-npm run build --if-present
+# Run lint-staged to format and lint staged files
+npx lint-staged

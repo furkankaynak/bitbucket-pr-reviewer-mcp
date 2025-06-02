@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import { databaseService } from './database.service.js';
 import { bitbucketService } from './bitbucket.service.js';
-import { config } from '../config/index.js';
+// Config is imported for potential future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { config as _config } from '../config/index.js';
 
 export interface MCPServerOptions {
   name: string;

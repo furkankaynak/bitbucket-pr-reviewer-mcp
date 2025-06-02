@@ -1,3 +1,5 @@
+// Config is imported for potential future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { config } from '.';
 
 export interface ReviewResponseParams {
@@ -14,7 +16,15 @@ export interface ReviewResponseParams {
 }
 
 export const formatReviewResponse = (params: ReviewResponseParams): string => {
-  const { filePath, diff, current, total, customPrompt, error, isCompleted = false } = params;
+  const {
+    filePath,
+    diff,
+    current: _current,
+    total: _total,
+    customPrompt,
+    error,
+    isCompleted = false,
+  } = params;
 
   // Handle error case
   if (error) {

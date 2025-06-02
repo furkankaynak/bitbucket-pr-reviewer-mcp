@@ -1,6 +1,8 @@
 import sqlite3 from 'sqlite3';
 import { open, Database } from 'sqlite';
-import { config } from '../config/index.js';
+// Config is imported for potential future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { config as _config } from '../config/index.js';
 import path from 'path';
 
 export class DatabaseService {

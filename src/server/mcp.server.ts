@@ -1,15 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { config } from '../config/index.js';
-import { formatReviewResponse } from '../config/pr-reviev-system-prompt.js';
-import { MCPService, type MCPResponse } from '../services/mcp.service.js';
+import { MCPService } from '../services/mcp.service.js';
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { z } from 'zod';
-
-// Define the handler parameter type
-interface HandlerParams {
-  prNumber: string | number;
-}
+import { formatReviewResponse } from '../config/pr-reviev-system-prompt.js';
 
 export class BitbucketPRReviewerServer {
   private server: McpServer;
@@ -92,7 +85,7 @@ export class BitbucketPRReviewerServer {
       {
         prNumber: z.union([z.string(), z.number()]),
       },
-      async ({ prNumber }, extra) => {
+      async ({ prNumber }, _extra) => {
         const result = await this.mcpService.handleRequest({
           method: 'get_pr_review',
           params: {
@@ -110,7 +103,7 @@ export class BitbucketPRReviewerServer {
       {
         prNumber: z.union([z.string(), z.number()]),
       },
-      async ({ prNumber }, extra) => {
+      async ({ prNumber }, _extra) => {
         const result = await this.mcpService.handleRequest({
           method: 'get_pr_review',
           params: {
@@ -128,7 +121,7 @@ export class BitbucketPRReviewerServer {
       {
         prNumber: z.union([z.string(), z.number()]),
       },
-      async ({ prNumber }, extra) => {
+      async ({ prNumber }, _extra) => {
         const result = await this.mcpService.handleRequest({
           method: 'reset_review',
           params: { prNumber: String(prNumber) },

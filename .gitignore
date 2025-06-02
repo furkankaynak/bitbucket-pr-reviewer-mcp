@@ -51,6 +51,7 @@ bower_components
 *.njsproj
 *.sln
 *.sw?
+.windsurf/
 
 # OS generated files
 .DS_Store
